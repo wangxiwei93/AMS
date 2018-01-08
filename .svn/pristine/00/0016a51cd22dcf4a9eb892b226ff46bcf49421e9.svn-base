@@ -1,0 +1,63 @@
+package com.routon.plcloud.common.decorator;
+
+import org.activiti.engine.task.Task;
+import org.displaytag.decorator.TableDecorator;
+
+import com.routon.plcloud.common.model.Software;
+
+public class PageLinkDecorator extends TableDecorator {
+	
+	public String getName(){
+		
+		Task t = (Task) getCurrentRowObject();
+		String ProcessInstanceId = t.getProcessInstanceId();
+		String ProcessDefinitionId = t.getProcessDefinitionId();
+		String ProcessName = t.getName();
+		return "<a href=\"/AMS/diagram-viewer/index.html?processInstanceId=" +
+				ProcessInstanceId + "&processDefinitionId="+ ProcessDefinitionId +"\">"+ ProcessName +"</a>";
+	}
+	
+	public String getButton(){
+		return "<button id=\"startup\" onclick=\"finisheTask(this)\" >办理</button>";
+	}
+
+/*	@Override
+	public Object decorate(Object columnValue, PageContext pageContext, MediaTypeEnum media) throws DecoratorException {
+		// TODO Auto-generated method stub
+		List<Task> taskQuery = (List<Task>) pageContext.getRequest().getAttribute("pageList");
+		return null;
+	}*/
+	
+	public String getDetailofHardwareProduct(){
+		
+		Software t = (Software) getCurrentRowObject();
+		long id = t.getId();
+		return "<a href=\"#\" id=\"popoverA" + id + "\" class=\"process-id popover-show\" "
+				+ "title=\"适配硬件产品\" "
+				+ "data-container=\"body\" "
+				+ "data-toggle=\"popover\" "
+				+ "data-trigger=\"hover\">详情</a>";
+	}
+	
+	public String getDetailofHardwarePlatform(){
+		Software t = (Software) getCurrentRowObject();
+		long id = t.getId();
+		return "<a href=\"#\" id=\"popoverB" + id + "\" class=\"process-id popover-show\" onmousemove=\"hoverEventB(this)\" "
+				+ "title=\"适配硬件产品\" "
+				+ "data-container=\"body\" "
+				+ "data-toggle=\"popover\" "
+				+ "data-trigger=\"hover\">详情</a>";
+		
+	}
+	
+	public String getDetailofOS(){
+		Software t = (Software) getCurrentRowObject();
+		long id = t.getId();
+		return "<a href=\"#\" id=\"popoverC" + id + "\" class=\"process-id popover-show\" onmousemove=\"hoverEventC(this)\" "
+				+ "title=\"适配硬件产品\" "
+				+ "data-container=\"body\" "
+				+ "data-toggle=\"popover\" "
+				+ "data-trigger=\"hover\">详情</a>";
+		
+	}
+}

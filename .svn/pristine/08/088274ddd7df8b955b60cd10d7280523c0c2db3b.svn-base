@@ -1,0 +1,116 @@
+package com.routon.plcloud.admin.order.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.routon.plcloud.admin.privilege.model.TreeBean;
+import com.routon.plcloud.common.PagingBean;
+import com.routon.plcloud.common.dao.mybatis.PagingDaoMybatis;
+import com.routon.plcloud.common.model.Company;
+import com.routon.plcloud.common.model.Order;
+import com.routon.plcloud.common.model.Project;
+import com.routon.plcloud.common.persistence.CompanyMapper;
+import com.routon.plcloud.common.persistence.OrderMapper;
+import com.routon.plcloud.common.persistence.ProjectMapper;
+import com.routon.plcloud.common.persistence.SoftwareMapper;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+	@Autowired
+	private CompanyMapper companyMapper;
+	
+	@Autowired
+	private ProjectMapper projectMapper;
+	
+	@Autowired
+	private OrderMapper orderMapper;
+	
+	@Autowired
+	private SoftwareMapper softwareMapper;
+	
+	@Resource(name = "pagingDaoMybatis")
+    private PagingDaoMybatis pagingDao;	
+	
+	@Override
+	public List<TreeBean> getMenuTrees() {
+		String sql = "select * from company";
+		List<Company> list = companyMapper.selectBySql(sql);
+		List<TreeBean> companyTree = new ArrayList<TreeBean>();
+		for (Company companyList : list){
+			TreeBean treeBean = new TreeBean();
+			List<TreeBean> projectTree = new ArrayList<TreeBean>();
+			List<Project> projectList = projectMapper.selectBysql("select a.* from project a left join projectcompany p on a.id = p.projectid"
+					+ " where p.companyid = '" + companyList.getId() + "'");
+			treeBean.setId(companyList.getId());
+			treeBean.setName(companyList.getCompanyname());
+			treeBean.setPid(Long.parseLong("0"));
+			treeBean.setParent(true);
+			treeBean.setOpen(true);
+			for(Project project : projectList){
+				TreeBean projectbean = new TreeBean();
+				projectbean.setId(project.getId());
+				projectbean.setName(project.getProjectname());
+				projectbean.setPid(companyList.getId());
+				projectTree.add(projectbean);
+			}
+			treeBean.setChildren(projectTree);
+			companyTree.add(treeBean);
+		}
+		return companyTree;
+	}
+
+	@Override
+	public PagingBean<Order> queryALL(String orderNum, int startIndex, int pageSize, String projectid) {
+		StringBuffer sbHQL = null;
+		if(projectid == null){
+			String sql = "select * from \"order\" where 1=1";
+			sbHQL = new StringBuffer(sql);
+		} else{
+			String sql = "select a.* from \"order\" a left join orderproject o on a.id = o.orderid where"
+					+ " o.projectid = '" + projectid + "'";
+			sbHQL = new StringBuffer(sql);
+		}
+
+		PagingBean<Order> pagingSystemhardware = pagingDao.query(orderMapper, sbHQL.toString(), 
+				null, null, startIndex, pageSize,  false);
+		return pagingSystemhardware;
+	}
+
+	@Override
+	public Company queryCompanyById(String projectid) {
+		Company company = companyMapper.selectById1(Long.parseLong(projectid));
+		return company;
+	}
+
+	@Override
+	public Project queryProjectById(String projectId) {
+		return projectMapper.selectById(Long.parseLong(projectId));
+	}
+
+	@Override
+	public List<String> querySoftwareErpCodeAll() {
+		List<String> list = softwareMapper.selectbysql("select a.erpcode from softwareproduct a");
+		return list;
+	}
+
+	@Override
+	public String querySoftwareNameByERPcode(String erpCode) {
+		
+		Map<String,String> map = softwareMapper.selectbysql2("select a.softwarename, a.softwareversion from softwareproduct a where a.erpcode = '" + erpCode + "'");
+		return map.get("softwarename") + " " + map.get("softwareversion");
+	}
+
+	@Override
+	public long save(Order order) {
+		orderMapper.insert(order);
+		return 0;
+	}
+	
+}

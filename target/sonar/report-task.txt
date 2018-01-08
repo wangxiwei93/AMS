@@ -1,0 +1,6 @@
+projectKey=com.routon.plsy:AMS
+serverUrl=http://localhost:9000
+serverVersion=6.6.0.32724
+dashboardUrl=http://localhost:9000/dashboard/index/com.routon.plsy:AMS
+ceTaskId=AV9xLFizIkH3-LRcYAze
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AV9xLFizIkH3-LRcYAze

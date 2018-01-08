@@ -1,0 +1,152 @@
+<%@ page import="com.routon.plcloud.common.decorator.PageCheckboxDecorator"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib prefix="display" uri="http://displaytag.sf.net" %>
+<%@ include file="/WEB-INF/views/head_n.jsp" %>
+<%@ include file="/WEB-INF/views/activiti/RuntimeProcess.jsp" %>
+<div style="
+    width: 1520px;
+    padding-left: 0px;
+    margin-left: 0px;
+    margin-top: 50px;
+">
+	<div class="panel panel-default" style="width: 1560px;">
+		<div class="panel-heading " style="padding: 0px;">
+  			<div class="" style="display: inline-block;width: 100%;">
+  			
+	  			<div class=" col-sm-8" style="width: 1530px;">
+		  			<form class="form-inline" role="form" id="queryform" name="queryform" action="${ctx}/hardware/show.do"  method="post">  		
+		  				<div class="btn-group" style="margin-top: 5px;margin-bottom: 5px;">
+		  					<input size="20" type="text" id="productName" name="productName" value="${productName}" class="form-control" placeholder="请输入外部硬件产品名称">
+		  				</div>
+		  				<div class="btn-group">
+		  					<button id="queryBtn" type="submit" class="btn btn-primary" >查询</button>
+		  				</div>
+		  			<div class="btn-group">
+		  				<button id="newBtn" type="button" class="btn btn-primary" data-toggle="modal" data-target="#ProductModal" onclick="newProduct()">新增</button>
+		  			</div>
+		  				<button id= "editBtn" type="button" class="btn btn-primary" onclick="edit()">编辑</button>
+		  				<button id= "deleteBtn" type="button" class="btn btn-danger" onclick="delProduct()">删除</button>
+		  			</form>
+	  			</div>
+  			</div> 
+  		</div>
+		<display:table name="${pageList}" id="curPage" class="table table-striped" sort="external"
+			requestURI="show.do"
+			decorator="com.routon.plcloud.common.decorator.PageLinkDecorator"
+			export="false">
+			<display:column property="id" title="<%=PageCheckboxDecorator.getTitle(pageContext)%>" decorator="com.routon.plcloud.common.decorator.PageCheckboxDecorator"  style="width:2%;"/>
+			<display:column title="序号" sortable="true" style="width:5%;" >
+				<c:out value="${curPage_rowNum}"/>
+			</display:column>
+			<display:column title="外部硬件产品名称" property="hardwareProductName" sortable="true" style="width:5%;" ></display:column>
+			<display:column title="ERP编码" property="erpCode" sortable="true"  style="width:5%;" ></display:column>
+			<display:column title="硬件版本" property="hardwareProductVersion" sortable="true"  style="width:5%;" ></display:column>
+			<display:column title="硬件平台" property="hardwareStation" sortable="true"  style="width:5%;" ></display:column>
+			<display:column title="系统版本" property="operateSystem" sortable="true" style="width:5%;" ></display:column>
+			<display:column title="创建时间"  property="createtime"  sortable="true"  style="width:5%;" maxLength="50" decorator="com.routon.plcloud.common.decorator.PageDateTimeDecorator"></display:column>
+			<display:column title="修改时间"  property="modifytime" sortable="true"  style="width:5%;" decorator="com.routon.plcloud.common.decorator.PageDateTimeDecorator"></display:column>
+		</display:table>
+</div>
+<%@ include file="/WEB-INF/views/common/pagination.jsp" %>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="ProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog" style="width: 400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">产品类型</h4>
+            </div>
+            <div class="modal-body">
+            	<form role="form" id="productForm" name="productForm" method='post' action='${ctx}/hardware/add.do'>
+            		<div class="form-group">
+            			<input id="updateId" name="updateId" type="hidden">
+    					<label for="name">外部硬件产品名称</label>
+    					<input type="text" class="form-control" id="productNameTable" name="productNameTable">
+    					<label for="name">ERP编码</label>
+    					<input type="text" class="form-control" id="erpCode" name="erpCode">
+    					<label for="name">硬件版本</label>
+    					<input type="text" class="form-control" id="hardwareVersion" name="hardwareVersion">
+    					<label for="name">硬件平台</label>
+    					<select class="form-control" id="hardwarePlatform" name="hardwarePlatform">
+			      			<option value="">―请选择―</option>
+			      			<c:forEach var="item" items="${hardwarelist}">
+								<option value="${item}">${item}</option>
+						    </c:forEach> 
+			      		</select>
+    					<label for="name">系统版本</label>
+    					<select class="form-control" id="systemVersion" name="systemVersion">
+			      			<option value="">―请选择―</option>
+			      			<c:forEach var="item" items="${systemVersionlist}">
+								<option value="${item}">${item}</option>
+						    </c:forEach> 
+			      		</select>
+    					<label for="name">请上传附件（外观、铭牌、产品规格说明书）:</label>
+    					<input type="file" id="inputfile">
+  					</div>
+            	</form>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="save('#productForm', '${base}hardware/add.do', '${base}hardware/show.do?page=${page}')">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</div>
+<script>
+/* 	$("#option1").on("change",function(){
+		alert('wangxiwei');
+	}) */
+	function newProduct(){
+		//document.getElementById("productForm").submit();
+		$("#productNameTable").val("");
+		$("#erpCode").val("");
+		$("#hardwareVersion").val("");
+		document.getElementById("hardwarePlatform").value = "";
+		document.getElementById("systemVersion").value = "";
+	}
+
+	function edit(){
+		var selectedIds = getCheckedRowValue("");
+		if(selectedIds==""){
+			alert("请选择一个进行编辑!");
+			return false;
+		}
+		var selectedId = selectedIds.split(",");
+		if (selectedId.length != 1) {
+			alert("请选择一个进行编辑!");
+			return false;
+		}
+		$('#ProductModal').modal('show');
+		$.ajax({
+			url:'${base}hardware/querybyId.do',
+			type:'post',
+			data:{ id : selectedIds },
+			async:false,
+			success:function(data){
+				$("#updateId").val(data.id);
+				$("#productNameTable").val(data.hardwareProductName);
+				$("#erpCode").val(data.erpCode);
+				$("#hardwareVersion").val(data.hardwareProductVersion);
+				document.getElementById("hardwarePlatform").value = data.hardwareStation;
+				document.getElementById("systemVersion").value = data.operateSystem;
+			}
+		});
+	}
+	
+	function delProduct(){
+		var selectedIds = getCheckedRowValue("");
+		if(selectedIds==""){
+			alert("请选择一个进行编辑!");
+			return false;
+		}
+		var selectedId = selectedIds.split(",");
+		if (selectedId.length != 1) {
+			alert("请选择一个进行编辑!");
+			return false;
+		}
+		del(selectedIds,'${ctx}/hardware/delete.do', g_ctx + '/hardware/show.do?page=${page}');
+	}
+</script>
+<script src="${ctx}/js/common.js"></script>
+<%@ include file="/WEB-INF/views/common/myModal.jsp" %>
+<%@ include file="/WEB-INF/views/foot_n.jsp" %>

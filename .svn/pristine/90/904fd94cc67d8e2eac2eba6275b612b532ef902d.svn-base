@@ -1,0 +1,96 @@
+package com.routon.plcloud.common.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
+public class HardwareStation implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 887599399100048340L;
+
+	/**
+	 * 硬件平台id
+	 */
+	private long id; 
+	
+	/**
+	 * 操作系统id
+	 */
+	@NotEmpty(message="硬件平台至少要依赖一个操作系统")
+	private long operatingsystemId;
+	
+	/**
+	 * 硬件平台名称
+	 */
+	@Length(min=1, max=12,message="硬件平台名称长度为1-12")
+	private String hardwarestationName;
+	
+	/**
+	 * 适配操作系统
+	 */
+	private String adaptoperatingSystem;
+	
+	/**
+	 * 创建时间
+	 */
+	private Date createtime;
+	
+	/**
+	 * 修改时间
+	 */
+	private Date moditytime;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getOperatingsystemId() {
+		return operatingsystemId;
+	}
+
+	public void setOperatingsystemId(long operatingsystemId) {
+		this.operatingsystemId = operatingsystemId;
+	}
+
+	public String getHardwarestationName() {
+		return hardwarestationName;
+	}
+
+	public void setHardwarestationName(String hardwarestationName) {
+		this.hardwarestationName = hardwarestationName;
+	}
+
+	public String getAdaptoperatingSystem() {
+		return adaptoperatingSystem;
+	}
+
+	public void setAdaptoperatingSystem(String adaptoperatingSystem) {
+		this.adaptoperatingSystem = adaptoperatingSystem;
+	}
+
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+
+	public Date getModitytime() {
+		return moditytime;
+	}
+
+	public void setModitytime(Date moditytime) {
+		this.moditytime = moditytime;
+	}
+
+}

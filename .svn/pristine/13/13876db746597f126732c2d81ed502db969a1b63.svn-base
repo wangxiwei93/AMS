@@ -1,0 +1,28 @@
+package com.routon.plcloud.common.decorator;
+
+import org.activiti.engine.task.Task;
+import org.displaytag.decorator.TableDecorator;
+
+public class PageLinkDecorator extends TableDecorator {
+	
+	public String getName(){
+		
+		Task t = (Task) getCurrentRowObject();
+		String ProcessInstanceId = t.getProcessInstanceId();
+		String ProcessDefinitionId = t.getProcessDefinitionId();
+		String ProcessName = t.getName();
+		return "<a href=\"/AMS/diagram-viewer/index.html?processInstanceId=" +
+				ProcessInstanceId + "&processDefinitionId="+ ProcessDefinitionId +"\">"+ ProcessName +"</a>";
+	}
+	
+	public String getButton(){
+		return "<button id=\"startup\" onclick=\"finisheTask(this)\" >办理</button>";
+	}
+
+/*	@Override
+	public Object decorate(Object columnValue, PageContext pageContext, MediaTypeEnum media) throws DecoratorException {
+		// TODO Auto-generated method stub
+		List<Task> taskQuery = (List<Task>) pageContext.getRequest().getAttribute("pageList");
+		return null;
+	}*/
+}

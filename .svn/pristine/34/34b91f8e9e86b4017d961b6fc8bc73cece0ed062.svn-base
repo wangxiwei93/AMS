@@ -1,0 +1,67 @@
+<%@page import="com.routon.plcloud.common.decorator.PageCheckboxDecorator"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@taglib prefix="display" uri="http://displaytag.sf.net" %>
+<%@ include file="/WEB-INF/views/head_n.jsp" %>
+<script src="${ctx}/js/jquery-easyui/jquery.easyui.min.js"></script>
+		<p style="padding-top: 10px;"><strong>流程列表：</strong></p>
+		<!-- table -->
+		<!--<display:table name="requestScope.pageList" id="curPage" class="table table-striped" sort="external"
+			requestURI="show.do"
+			decorator="com.routon.plcloud.common.decorator.PageDecorator"
+			export="false">
+			<display:column title="<%=PageCheckboxDecorator.getTitle(pageContext)%>" decorator="com.routon.plcloud.common.decorator.PageCheckboxDecorator"  style="width:2%;"/>
+			
+			<display:column title="流程ID" sortable="true" property="id" style="width:9%;" ></display:column>
+			<display:column title="流程名称"  property="name" sortable="true"  style="width:10%;" maxLength="50"></display:column>
+			<display:column title="Key"  property="key"  sortable="true"  style="width:5%;"></display:column>
+			<display:column title="版本号" property="version"  sortable="true"  style="width:4%;"></display:column>
+			<display:column title="XML"  href="${ctx}/activiti/getProcessImageAndXml.do?processDefinitionId=${curPage.id}&resourceType=xml" property="resourceName" sortable="true"  style="width:8%;" ></display:column>
+			<display:column title="图片"  href="${ctx}/activiti/getProcessImageAndXml.do?processDefinitionId=${curPage.id}&resourceType=image" property="diagramResourceName" sortable="true"  style="width:10%;" ></display:column>
+			<display:column title="操作"  sortable="true"  style="width:10%;" ></display:column>
+		</display:table>-->
+	<table id = "table1" width="100%" class="need-border">
+		<thead>
+			<tr>
+				<th>流程ID</th>
+				<th>DeploymentId</th>
+				<th>名称</th>
+				<th>KEY</th>
+				<th>版本号</th>
+				<th>XML</th>
+				<th>图片</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach items="${pageList}" var="process">
+				<tr>
+					<td class='process-id'>${process.id }</td>
+					<td>${process.deploymentId }</td>
+					<td class='process-name'>${process.name }</td>
+					<td>${process.key }</td>
+					<td>${process.version }</td>
+					<td><a target="_blank" href="${ctx}/activiti/getProcessImageAndXml.do?processDefinitionId=${process.id}&resourceType=xml">${process.resourceName }</a></td>
+					<td><a target="_blank" href="${ctx}/activiti/getProcessImageAndXml.do?processDefinitionId=${process.id}&resourceType=image">${process.diagramResourceName }</a></td>
+					<td><button id="startup" onclick="startProcess(this)">启动</button></td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+<script>
+	function startProcess(obj){
+		//var $ele = $(this);
+		var id = $(obj).parents('tr').find('.process-id').text()
+		$.ajax({
+			url:'${base}activiti/startPrpces.do',
+			type:'post',
+			data:{ processDefinitionId : id },
+			async:false,
+			success:function(data){
+				if(data == "success"){
+					alert("流程已启动");
+				}
+			}
+		});
+	}
+</script>
+<%@ include file="/WEB-INF/views/foot_n.jsp" %>
